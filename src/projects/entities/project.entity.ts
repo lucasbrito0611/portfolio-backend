@@ -23,10 +23,10 @@ export class Project {
     @Column({ type: 'text', array: true })
     technologies: string[];
 
-    @Column({ nullable: true })
+    @Column({ type: 'varchar', nullable: true })
     siteUrl: string | null;
 
-    @Column({ nullable: true })
+    @Column({ type: 'varchar', nullable: true })
     githubUrl: string | null;
 
     @Column({ type: 'int', default: 0 })
