@@ -8,7 +8,7 @@ export class Skill {
     @Column()
     name: string;
 
-    @Column({ nullable: true }) 
+    @Column({ type: 'text', nullable: true }) 
     description: string | null;
 
     @Column()
