@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SkillsModule } from './skills/skills.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { SkillsModule } from './skills/skills.module';
         synchronize: true,
       }),
     }),
-    SkillsModule
+    SkillsModule,
+    ProjectsModule
   ],
   controllers: [AppController],
   providers: [AppService],
