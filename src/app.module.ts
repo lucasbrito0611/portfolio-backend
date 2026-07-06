@@ -15,16 +15,24 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_DATABASE'),
-        entities: [__dirname + '/**/*.entity.{js,ts}'],
-        synchronize: true,
-      }),
+      useFactory: (config: ConfigService) => {
+        const databaseUrl = config.get<string>('DATABASE_URL');
+        return {
+          type: 'postgres',
+          ...(databaseUrl
+            ? { url: databaseUrl }
+            : {
+                host: config.get<string>('DB_HOST') || 'localhost',
+                port: config.get<number>('DB_PORT') || 5432,
+                username: config.get<string>('DB_USERNAME') || 'portfolio',
+                password: config.get<string>('DB_PASSWORD') || 'portfolio',
+                database: config.get<string>('DB_DATABASE') || 'portfolio',
+              }),
+          entities: [__dirname + '/**/*.entity.{js,ts}'],
+          synchronize: true,
+          ssl: databaseUrl ? { rejectUnauthorized: false } : false,
+        };
+      },
     }),
     SkillsModule,
     ProjectsModule,
