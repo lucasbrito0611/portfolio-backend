@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { SkillsService } from './skills.service';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
+import { ReorderSkillsDto } from './dto/reorder-skills.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('skills') // Agrupa todos os endpoints na seção "skills" da UI
@@ -32,6 +33,16 @@ export class SkillsController {
   @ApiNotFoundResponse({ description: 'Skill não encontrada.' })
   findOne(@Param('id') id: string) {
     return this.skillsService.findOne(id);
+  }
+
+  @Patch('reorder')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Reordenar skills em lote' })
+  @ApiOkResponse({ description: 'Ordem atualizada com sucesso.' })
+  reorder(@Body() reorderSkillsDto: ReorderSkillsDto) {
+    return this.skillsService.reorder(reorderSkillsDto);
   }
 
   @Patch(':id')

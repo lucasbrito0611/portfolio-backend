@@ -29,7 +29,7 @@ import { AuthModule } from './auth/auth.module';
                 database: config.get<string>('DB_DATABASE') || 'portfolio',
               }),
           entities: [__dirname + '/**/*.entity.{js,ts}'],
-          synchronize: true,
+          synchronize: false,
           ssl: databaseUrl ? { rejectUnauthorized: false } : false,
         };
       },

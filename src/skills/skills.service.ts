@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
+import { ReorderSkillsDto } from './dto/reorder-skills.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from './entities/skill.entity';
 import { Repository } from 'typeorm';
@@ -43,5 +44,13 @@ export class SkillsService {
     await this.findOne(id);
 
     await this.skillRepository.delete(id);
+  }
+
+  async reorder(reorderDto: ReorderSkillsDto): Promise<void> {
+    await Promise.all(
+      reorderDto.items.map((item) =>
+        this.skillRepository.update(item.id, { order: item.order }),
+      ),
+    );
   }
 }

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ReorderProjectsDto } from './dto/reorder-projects.dto';
 import { Project } from './entities/project.entity';
 
 @Injectable()
@@ -17,7 +18,9 @@ export class ProjectsService {
     }
 
   async findAll(): Promise<Project[]> {
-    return this.projectRepository.find();
+    return this.projectRepository.find({
+      order: { order: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Project> {
@@ -42,5 +45,13 @@ export class ProjectsService {
     await this.findOne(id);
 
     await this.projectRepository.delete(id);
+  }
+
+  async reorder(reorderDto: ReorderProjectsDto): Promise<void> {
+    await Promise.all(
+      reorderDto.items.map((item) =>
+        this.projectRepository.update(item.id, { order: item.order }),
+      ),
+    );
   }
 }

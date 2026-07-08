@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ReorderProjectsDto } from './dto/reorder-projects.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('projects') // Agrupa todos os endpoints na seção "projects" da UI
@@ -32,6 +33,16 @@ export class ProjectsController {
   @ApiNotFoundResponse({ description: 'Projeto não encontrado.' })
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);
+  }
+
+  @Patch('reorder')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Reordenar projetos em lote' })
+  @ApiOkResponse({ description: 'Ordem atualizada com sucesso.' })
+  reorder(@Body() reorderProjectsDto: ReorderProjectsDto) {
+    return this.projectsService.reorder(reorderProjectsDto);
   }
 
   @Patch(':id')
