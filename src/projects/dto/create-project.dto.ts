@@ -59,6 +59,15 @@ export class CreateProjectDto {
     githubUrl?: string;
 
     @ApiProperty({
+        description: 'URL do repositório de backend no GitHub (quando o projeto tem dois repositórios separados)',
+        example: 'https://github.com/usuario/repositorio-backend',
+        required: false,
+    })
+    @IsUrl()
+    @IsOptional()
+    githubUrlBackend?: string;
+
+    @ApiProperty({
         description: 'Ordem de exibição (menor = primeiro). Padrão: 0',
         example: 1,
         required: false,

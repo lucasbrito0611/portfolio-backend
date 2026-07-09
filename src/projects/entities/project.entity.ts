@@ -29,6 +29,9 @@ export class Project {
     @Column({ type: 'varchar', nullable: true })
     githubUrl: string | null;
 
+    @Column({ type: 'varchar', nullable: true })
+    githubUrlBackend: string | null;
+
     @Column({ type: 'int', default: 0 })
     order: number;
 
