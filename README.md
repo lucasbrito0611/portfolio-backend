@@ -1,98 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 Portfolio — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST do meu portfólio pessoal, desenvolvida em **NestJS** como projeto de aprendizado do framework. Gerencia projetos, skills e autenticação administrativa.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## ✨ Destaques
 
-## Description
+- CRUD completo de **Projetos** e **Skills**, consumido dinamicamente pelo frontend
+- Autenticação JWT com guard protegendo todas as rotas de escrita
+- Documentação interativa automática via **Swagger/OpenAPI** em `/api`
+- Health check em `GET /` com verificação de conexão ao banco (via `@nestjs/terminus`)
+- Validação de entrada com `class-validator` + `ValidationPipe` global
+- Suporte a banco local (Docker) e banco em nuvem (Neon) via `DATABASE_URL`
+- Migrations TypeORM para evoluir o schema com segurança
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🧭 Visão Geral
 
-## Project setup
+- **Framework:** NestJS 11
+- **Linguagem:** TypeScript
+- **ORM:** TypeORM + PostgreSQL
+- **Autenticação:** JWT (Passport + `@nestjs/jwt`)
+- **Documentação:** Swagger (`@nestjs/swagger`)
+- **Health Check:** `@nestjs/terminus`
+- **Configuração:** `@nestjs/config` (variáveis de ambiente centralizadas)
+- **Deploy:** Render (auto-deploy na branch `main`)
+- **Banco em produção:** Neon (PostgreSQL serverless)
 
-```bash
-$ npm install
+## 📂 Estrutura do Projeto
+
+```
+portfolio-backend/
+├── src/
+│   ├── auth/
+│   │   ├── auth.controller.ts      # POST /api/v1/auth/login
+│   │   ├── auth.service.ts         # Lógica de validação e geração de JWT
+│   │   ├── auth.module.ts
+│   │   ├── jwt-auth.guard.ts       # Guard que protege rotas privadas
+│   │   ├── jwt.strategy.ts         # Estratégia Passport para JWT
+│   │   └── dto/                    # LoginDto com validação
+│   ├── projects/
+│   │   ├── projects.controller.ts  # CRUD de projetos
+│   │   ├── projects.service.ts
+│   │   ├── projects.module.ts
+│   │   ├── entities/               # Entidade Project (TypeORM)
+│   │   └── dto/                    # CreateProjectDto, UpdateProjectDto
+│   ├── skills/
+│   │   ├── skills.controller.ts    # CRUD de skills
+│   │   ├── skills.service.ts
+│   │   ├── skills.module.ts
+│   │   ├── entities/               # Entidade Skill (TypeORM)
+│   │   └── dto/                    # CreateSkillDto, UpdateSkillDto
+│   ├── app.controller.ts           # GET / (health check)
+│   ├── app.module.ts               # Módulo raiz com TypeORM e ConfigModule
+│   ├── data-source.ts              # DataSource para CLI de migrations
+│   └── main.ts                     # Bootstrap com CORS, Pipes e Swagger
+├── .env.example
+└── package.json
 ```
 
-## Compile and run the project
+## 🚀 Como Rodar Localmente
+
+**Pré-requisitos:** Node.js 20+, Docker (para o banco local)
 
 ```bash
-# development
-$ npm run start
+# 1. Suba o banco de dados PostgreSQL via Docker
+docker compose up -d
 
-# watch mode
-$ npm run start:dev
+# 2. Instale as dependências
+npm install
 
-# production mode
-$ npm run start:prod
+# 3. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com suas credenciais
+
+# 4. Inicie em modo desenvolvimento (hot-reload)
+npm run start:dev
 ```
 
-## Run tests
+A API estará disponível em `http://localhost:3000`.
+A documentação Swagger estará em `http://localhost:3000/api`.
+
+## 🔑 Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz com base no `.env.example`:
+
+| Variável | Descrição |
+|---|---|
+| `DATABASE_URL` | Connection string do PostgreSQL (ex: Neon). Tem prioridade sobre as variáveis individuais abaixo |
+| `DB_HOST` | Host do banco local (padrão: `localhost`) |
+| `DB_PORT` | Porta do banco (padrão: `5432`) |
+| `DB_USERNAME` | Usuário do banco |
+| `DB_PASSWORD` | Senha do banco |
+| `DB_DATABASE` | Nome do banco |
+| `FRONTEND_URL` | URL do frontend para configuração do CORS |
+| `JWT_SECRET` | Chave secreta para assinar os tokens JWT (use 32+ caracteres) |
+| `ADMIN_EMAIL` | E-mail do usuário administrador |
+| `ADMIN_PASSWORD_HASH` | Hash bcrypt da senha do administrador |
+
+## 🗄️ Migrations
+
+O projeto usa migrations TypeORM para controle do schema do banco. Com `synchronize: false` em produção, todas as mudanças de schema devem ser feitas via migration.
 
 ```bash
-# unit tests
-$ npm run test
+# Gerar uma nova migration a partir das mudanças nas entidades
+npm run migration:generate src/migrations/NomeDaMigration
 
-# e2e tests
-$ npm run test:e2e
+# Aplicar as migrations pendentes
+npm run migration:run
 
-# test coverage
-$ npm run test:cov
+# Reverter a última migration aplicada
+npm run migration:revert
 ```
 
-## Deployment
+## 📖 Endpoints Principais
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Método | Rota | Autenticação | Descrição |
+|---|---|---|---|
+| `GET` | `/` | Pública | Health check (banco + app) |
+| `GET` | `/api` | Pública | Documentação Swagger |
+| `POST` | `/api/v1/auth/login` | Pública | Login — retorna JWT |
+| `GET` | `/api/v1/projects` | Pública | Lista todos os projetos |
+| `POST` | `/api/v1/projects` | JWT | Cria projeto |
+| `PUT` | `/api/v1/projects/:id` | JWT | Atualiza projeto |
+| `DELETE` | `/api/v1/projects/:id` | JWT | Remove projeto |
+| `GET` | `/api/v1/skills` | Pública | Lista todas as skills |
+| `POST` | `/api/v1/skills` | JWT | Cria skill |
+| `PUT` | `/api/v1/skills/:id` | JWT | Atualiza skill |
+| `DELETE` | `/api/v1/skills/:id` | JWT | Remove skill |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## ☁️ Deploy (Render)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+O projeto está configurado para deploy automático no Render a partir da branch `main`.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+| Campo | Valor |
+|---|---|
+| **Build Command** | `npm install && npm run build` |
+| **Start Command** | `npm run start:prod` |
 
-## Resources
+Configure as variáveis de ambiente no painel do Render (Environment → Environment Variables). Qualquer alteração em env vars aciona um novo deploy automaticamente.
 
-Check out a few resources that may come in handy when working with NestJS:
+> **Keep-alive:** Configure o [UptimeRobot](https://uptimerobot.com) para pingar `GET /` a cada 5 minutos e evitar o sleep do free tier do Render.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 🔗 Frontend
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Este backend é consumido pelo [portfolio-frontend](https://github.com/lucasbrito0611/portfolio-frontend), hospedado no Vercel.
