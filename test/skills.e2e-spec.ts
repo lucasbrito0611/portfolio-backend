@@ -5,6 +5,7 @@ import { App } from 'supertest/types';
 
 import { SkillsController } from '../src/skills/skills.controller';
 import { SkillsService } from '../src/skills/skills.service';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 
 const mockSkill = {
   id: 'uuid-123',
@@ -34,6 +35,10 @@ const mockSkillsService = {
   remove: jest.fn(),
 };
 
+const mockJwtAuthGuard = {
+  canActivate: jest.fn().mockReturnValue(true),
+};
+
 // ---------------------------------------------------------------------------
 // Suite de testes E2E
 // ---------------------------------------------------------------------------
@@ -49,7 +54,10 @@ describe('Skills (e2e)', () => {
           useValue: mockSkillsService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockJwtAuthGuard)
+      .compile();
 
     app = moduleFixture.createNestApplication();
 
@@ -65,6 +73,7 @@ describe('Skills (e2e)', () => {
     await app.init();
 
     jest.clearAllMocks();
+    mockJwtAuthGuard.canActivate.mockReturnValue(true);
   });
 
   afterEach(async () => {

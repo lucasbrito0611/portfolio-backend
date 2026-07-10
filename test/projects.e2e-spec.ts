@@ -5,9 +5,10 @@ import { App } from 'supertest/types';
 
 import { ProjectsController } from '../src/projects/projects.controller';
 import { ProjectsService } from '../src/projects/projects.service';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 
 const mockProject = {
-  id: 'uuid-456',
+  id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
   title_pt: 'Meu Projeto',
   title_en: 'My Project',
   description_pt: 'Descrição em PT',
@@ -40,6 +41,10 @@ const mockProjectsService = {
   remove: jest.fn(),
 };
 
+const mockJwtAuthGuard = {
+  canActivate: jest.fn().mockReturnValue(true),
+};
+
 describe('Projects (e2e)', () => {
   let app: INestApplication<App>;
 
@@ -52,7 +57,10 @@ describe('Projects (e2e)', () => {
           useValue: mockProjectsService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue(mockJwtAuthGuard)
+      .compile();
 
     app = moduleFixture.createNestApplication();
 
@@ -67,6 +75,7 @@ describe('Projects (e2e)', () => {
     await app.init();
 
     jest.clearAllMocks();
+    mockJwtAuthGuard.canActivate.mockReturnValue(true);
   });
 
   afterEach(async () => {
@@ -106,7 +115,7 @@ describe('Projects (e2e)', () => {
       mockProjectsService.findOne.mockResolvedValue(mockProject);
 
       const response = await request(app.getHttpServer())
-        .get('/projects/uuid-456')
+        .get('/projects/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')
         .expect(200);
 
       expect(response.body).toEqual(mockProject);
@@ -114,14 +123,14 @@ describe('Projects (e2e)', () => {
 
     it('deve retornar 404 quando o projeto não existir', async () => {
       mockProjectsService.findOne.mockRejectedValue(
-        new NotFoundException('Projeto com id "id-inexistente" não encontrado'),
+        new NotFoundException('Projeto com id "00000000-0000-0000-0000-000000000000" não encontrado'),
       );
 
       const response = await request(app.getHttpServer())
-        .get('/projects/id-inexistente')
+        .get('/projects/00000000-0000-0000-0000-000000000000')
         .expect(404);
 
-      expect(response.body.message).toContain('id-inexistente');
+      expect(response.body.message).toContain('00000000-0000-0000-0000-000000000000');
     });
   });
 
@@ -179,7 +188,7 @@ describe('Projects (e2e)', () => {
       mockProjectsService.update.mockResolvedValue(updatedProject);
 
       const response = await request(app.getHttpServer())
-        .patch('/projects/uuid-456')
+        .patch('/projects/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')
         .send({ title_pt: 'Projeto Atualizado' })
         .expect(200);
 
@@ -206,10 +215,10 @@ describe('Projects (e2e)', () => {
       mockProjectsService.remove.mockResolvedValue(undefined);
 
       await request(app.getHttpServer())
-        .delete('/projects/uuid-456')
+        .delete('/projects/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')
         .expect(200);
 
-      expect(mockProjectsService.remove).toHaveBeenCalledWith('uuid-456');
+      expect(mockProjectsService.remove).toHaveBeenCalledWith('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
     });
 
     it('deve retornar 404 quando o projeto não existir', async () => {

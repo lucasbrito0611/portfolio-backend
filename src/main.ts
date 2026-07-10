@@ -15,8 +15,12 @@ async function bootstrap() {
 
   // Habilita CORS para que o frontend possa fazer requisições à API.
   app.enableCors({
-    origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    origin: (origin, callback) => {
+      const allowed = process.env.FRONTEND_URL;
+      if (!allowed) throw new Error('FRONTEND_URL não configurada!');
+      callback(null, origin === allowed);
+    },
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     credentials: true,
   });
 
