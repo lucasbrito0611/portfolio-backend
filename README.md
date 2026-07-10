@@ -5,7 +5,8 @@ API REST do meu portfólio pessoal, desenvolvida em **NestJS** como projeto de a
 ## ✨ Destaques
 
 - CRUD completo de **Projetos** e **Skills**, consumido dinamicamente pelo frontend
-- Autenticação JWT com guard protegendo todas as rotas de escrita
+- Autenticação JWT via cookies HttpOnly com guard protegendo todas as rotas de escrita
+- Proteção contra brute force com Rate Limiting (`@nestjs/throttler`)
 - Documentação interativa automática via **Swagger/OpenAPI** em `/api`
 - Health check em `GET /` com verificação de conexão ao banco (via `@nestjs/terminus`)
 - Validação de entrada com `class-validator` + `ValidationPipe` global
@@ -17,7 +18,9 @@ API REST do meu portfólio pessoal, desenvolvida em **NestJS** como projeto de a
 - **Framework:** NestJS 11
 - **Linguagem:** TypeScript
 - **ORM:** TypeORM + PostgreSQL
-- **Autenticação:** JWT (Passport + `@nestjs/jwt`)
+- **Autenticação:** JWT via Cookies HttpOnly (Passport + `@nestjs/jwt` + `cookie-parser`)
+- **Rate Limiting:** `@nestjs/throttler`
+- **Testes:** Unitários (Jest) e E2E (Supertest)
 - **Documentação:** Swagger (`@nestjs/swagger`)
 - **Health Check:** `@nestjs/terminus`
 - **Configuração:** `@nestjs/config` (variáveis de ambiente centralizadas)
@@ -116,7 +119,8 @@ npm run migration:revert
 |---|---|---|---|
 | `GET` | `/` | Pública | Health check (banco + app) |
 | `GET` | `/api` | Pública | Documentação Swagger |
-| `POST` | `/api/v1/auth/login` | Pública | Login — retorna JWT |
+| `POST` | `/api/v1/auth/login` | Pública | Login — define cookie `admin_token` (HttpOnly) |
+| `POST` | `/api/v1/auth/logout` | JWT | Logout — limpa cookie `admin_token` |
 | `GET` | `/api/v1/projects` | Pública | Lista todos os projetos |
 | `POST` | `/api/v1/projects` | JWT | Cria projeto |
 | `PUT` | `/api/v1/projects/:id` | JWT | Atualiza projeto |
