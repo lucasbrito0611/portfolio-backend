@@ -2,8 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { HealthCheckService, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
+const mockHealthCheckResult = { status: 'ok', info: { database: { status: 'up' } } };
+
 const mockHealthCheckService = {
-  check: jest.fn().mockResolvedValue({ status: 'ok' }),
+  check: jest.fn().mockResolvedValue(mockHealthCheckResult),
 };
 
 const mockTypeOrmHealthIndicator = {
@@ -23,7 +25,6 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
-
     jest.clearAllMocks();
   });
 
@@ -32,10 +33,10 @@ describe('AppController', () => {
   });
 
   describe('check', () => {
-    it('should return health check result', async () => {
+    it('deve chamar o health check do banco e retornar o resultado', async () => {
       const result = await appController.check();
       expect(mockHealthCheckService.check).toHaveBeenCalledTimes(1);
-      expect(result).toEqual({ status: 'ok' });
+      expect(result).toEqual(mockHealthCheckResult);
     });
   });
 });
