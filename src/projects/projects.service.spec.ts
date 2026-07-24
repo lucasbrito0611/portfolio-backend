@@ -26,6 +26,7 @@ const mockProject: Project = {
   technologies: ['React', 'NestJS'],
   siteUrl: 'https://myproject.com',
   githubUrl: 'https://github.com/lucasbrito0611/myproject',
+  githubUrlBackend: null,
   order: 1,
   createdAt: new Date(),
 };
