@@ -8,6 +8,13 @@ import { Throttle } from '@nestjs/throttler';
 
 const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000;
 
+const isProduction = process.env.NODE_ENV === 'production';
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+  secure: isProduction,
+} as const;
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -26,9 +33,7 @@ export class AuthController {
     const { accessToken } = await this.authService.login(loginDto);
 
     res.cookie('admin_token', accessToken, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      ...COOKIE_OPTIONS,
       maxAge: COOKIE_MAX_AGE,
     });
 
@@ -51,10 +56,6 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Encerrar sessão e limpar cookie' })
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('admin_token', {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
+    res.clearCookie('admin_token', COOKIE_OPTIONS);
   }
 }

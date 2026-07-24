@@ -16,9 +16,17 @@ async function bootstrap() {
   // Habilita CORS para que o frontend possa fazer requisições à API.
   app.enableCors({
     origin: (origin, callback) => {
-      const allowed = process.env.FRONTEND_URL;
-      if (!allowed) throw new Error('FRONTEND_URL não configurada!');
-      callback(null, origin === allowed);
+      const allowedRaw = process.env.FRONTEND_URL;
+      if (!allowedRaw) {
+        return callback(new Error('FRONTEND_URL não configurada!'), false);
+      }
+      const allowedOrigins = allowedRaw.split(',').map((u) => u.trim());
+
+      // Permite requisições sem origin (ex: Postman, chamadas server-to-server, Swagger)
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin não permitida pelo CORS: ${origin}`), false);
     },
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     credentials: true,
