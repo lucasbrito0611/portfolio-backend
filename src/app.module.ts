@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
-import { TerminusModule } from '@nestjs/terminus';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { SkillsModule } from './skills/skills.module';
@@ -41,7 +40,6 @@ import { AuthModule } from './auth/auth.module';
       ttl: 60_000, 
       limit: 100,  
     }]),
-    TerminusModule,
     SkillsModule,
     ProjectsModule,
     AuthModule
